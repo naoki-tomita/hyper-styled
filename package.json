@@ -1,0 +1,12 @@
+{
+  "devDependencies": {
+    "hyperapp": "^1.2.9",
+    "typescript": "^3.2.2"
+  },
+  "name": "hyper-styled",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "author": "naoki.tomita <mxcpy608@hotmail.com>",
+  "license": "MIT"
+}
