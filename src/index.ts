@@ -9,7 +9,7 @@ function random() {
 
 function addStyle(id: string, styles: string) {
   const el = document.createElement("style");
-  el.innerHTML = `*[data-style=${id}] { ${styles} } }`;
+  el.innerHTML = `*[data-style=${id}] { ${styles} }`;
   document.body.appendChild(el);
 }
 

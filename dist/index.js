@@ -20,7 +20,7 @@ function random() {
 }
 function addStyle(id, styles) {
     var el = document.createElement("style");
-    el.innerHTML = "*[data-style=" + id + "] { " + styles + " } }";
+    el.innerHTML = "*[data-style=" + id + "] { " + styles + " }";
     document.body.appendChild(el);
 }
 function wrap(name) {
