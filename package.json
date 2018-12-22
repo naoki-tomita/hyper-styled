@@ -1,10 +1,12 @@
 {
   "devDependencies": {
+    "@types/jest": "^23.3.10",
+    "@types/node": "^10.12.18",
     "hyperapp": "^1.2.9",
     "jest": "^23.6.0",
     "prettier": "^1.15.3",
     "ts-jest": "^23.10.5",
-    "typescript": "^3.2.2"
+    "typescript": "3.1.4"
   },
   "name": "hyper-styled",
   "version": "0.0.5",
@@ -16,7 +18,8 @@
     "prebuild": "yarn fix",
     "build": "tsc",
     "prepublish": "tsc",
-    "fix": "prettier --write --trailing-comma all \"./src/**/*.ts\""
+    "fix": "prettier --write --trailing-comma all \"./src/**/*.ts\"",
+    "test": "jest --config ./jest.config.js"
   },
   "dependencies": {
     "hyperapp": "^1.2.9"
