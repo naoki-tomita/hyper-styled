@@ -7,7 +7,7 @@
     "typescript": "^3.2.2"
   },
   "name": "hyper-styled",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "naoki.tomita <mxcpy608@hotmail.com>",
@@ -23,6 +23,7 @@
   },
   "files": [
     "dist",
-    "package.json"
+    "package.json",
+    "README.md"
   ]
 }
