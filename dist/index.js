@@ -18,10 +18,39 @@ function random() {
         .map(function () { return alphabets[Math.round(Math.random() * (alphabets.length - 1))]; })
         .join("");
 }
-function addStyle(id, styles) {
-    var el = document.createElement("style");
-    el.innerHTML = "*[data-style=" + id + "] { " + styles + " }";
-    document.body.appendChild(el);
+var styles = {};
+var styleEl = document.createElement("style");
+document.body.appendChild(styleEl);
+function get(arg, state) {
+    if (typeof arg === "string" || typeof arg === "number") {
+        return arg;
+    }
+    else if (typeof arg === "undefined") {
+        return "";
+    }
+    return arg(state);
+}
+function toStyleString(id, state, templates) {
+    var args = [];
+    for (var _i = 3; _i < arguments.length; _i++) {
+        args[_i - 3] = arguments[_i];
+    }
+    return " *[data-style=" + id + "] { " + templates
+        .map(function (text, i) { return "" + text + get(args[i], state); })
+        .join("") + " }";
+}
+function updateStyle(id, state, templates) {
+    var args = [];
+    for (var _i = 3; _i < arguments.length; _i++) {
+        args[_i - 3] = arguments[_i];
+    }
+    styles[id] = toStyleString.apply(void 0, [id, state, templates].concat(args));
+    renderStyle();
+}
+function renderStyle() {
+    styleEl.innerHTML = Object.keys(styles)
+        .map(function (key) { return styles[key]; })
+        .join("");
 }
 function wrap(name) {
     return function (styles) {
@@ -30,8 +59,8 @@ function wrap(name) {
             args[_i - 1] = arguments[_i];
         }
         var id = random();
-        addStyle(id, styles.map(function (text, i) { return "" + text + (args[i] || ""); }).join(""));
-        return function (attr, children) { return hyperapp_1.h(name, __assign({ "data-style": id }, attr), children); };
+        return function (attr, children) { return (updateStyle.apply(void 0, [id, attr, styles].concat(args)),
+            hyperapp_1.h(name, __assign({ "data-style": id }, attr), children)); };
     };
 }
 exports.wrap = wrap;

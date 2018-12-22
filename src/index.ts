@@ -7,22 +7,67 @@ function random() {
     .join("");
 }
 
-function addStyle(id: string, styles: string) {
-  const el = document.createElement("style");
-  el.innerHTML = `*[data-style=${id}] { ${styles} }`;
-  document.body.appendChild(el);
+const styles: { [key: string]: string } = {};
+const styleEl = document.createElement("style");
+document.body.appendChild(styleEl);
+
+type WrapArgument<State> =
+  | string
+  | number
+  | ((state: State) => string | number);
+function get<T>(arg: WrapArgument<T>, state: T) {
+  if (typeof arg === "string" || typeof arg === "number") {
+    return arg;
+  } else if (typeof arg === "undefined") {
+    return "";
+  }
+  return arg(state);
 }
 
-export function wrap(name: LegacyElement | Component): Wrap {
-  return function(styles: TemplateStringsArray, ...args: any[]): Component {
+function toStyleString(
+  id: string,
+  state: any,
+  templates: TemplateStringsArray,
+  ...args: WrapArgument<any>[]
+) {
+  return ` *[data-style=${id}] { ${templates
+    .map((text, i) => `${text}${get(args[i], state)}`)
+    .join("")} }`;
+}
+
+function updateStyle(
+  id: string,
+  state: any,
+  templates: TemplateStringsArray,
+  ...args: WrapArgument<any>[]
+) {
+  styles[id] = toStyleString(id, state, templates, ...args);
+  renderStyle();
+}
+
+function renderStyle() {
+  styleEl.innerHTML = Object.keys(styles)
+    .map(key => styles[key])
+    .join("");
+}
+
+export function wrap<State>(
+  name: LegacyElement | Component<State>,
+): Wrap<State> {
+  return function(
+    styles: TemplateStringsArray,
+    ...args: WrapArgument<State>[]
+  ): Component<State> {
     const id = random();
-    addStyle(id, styles.map((text, i) => `${text}${args[i] || ""}`).join(""));
-    return (attr, children) => h(name, { "data-style": id, ...attr }, children);
+    return (attr, children) => (
+      updateStyle(id, attr, styles, ...args),
+      h<State>(name, { "data-style": id, ...attr }, children)
+    );
   };
 }
 
-interface Wrap {
-  (styles: TemplateStringsArray, ...args: any[]): Component<any>;
+interface Wrap<T> {
+  (styles: TemplateStringsArray, ...args: any[]): Component<T>;
 }
 
 type LegacyElement =
@@ -57,6 +102,9 @@ const legacyElementKeys: LegacyElement[] = [
   "li",
 ];
 
-export const styled = legacyElementKeys.reduce<
-  { [key in LegacyElement]: Wrap }
->((result, key) => ((result[key] = wrap(key)), result), {} as any);
+type Styled = { [key in LegacyElement]: Wrap<any> };
+
+export const styled: Styled = legacyElementKeys.reduce<Styled>(
+  (result, key) => ((result[key] = wrap(key)), result),
+  {} as any,
+);

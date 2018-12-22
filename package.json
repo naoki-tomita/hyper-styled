@@ -10,7 +10,18 @@
   "author": "naoki.tomita <mxcpy608@hotmail.com>",
   "license": "MIT",
   "scripts": {
+    "prebuild": "yarn fix",
     "build": "tsc",
-    "prepublish": "tsc"
-  }
+    "prepublish": "tsc",
+    "fix": "prettier --write --trailing-comma all \"./src/**/*.ts\""
+  },
+  "dependencies": {
+    "jest": "^23.6.0",
+    "prettier": "^1.15.3",
+    "ts-jest": "^23.10.5"
+  },
+  "files": [
+    "dist",
+    "package.json"
+  ]
 }
