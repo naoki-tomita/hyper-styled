@@ -22,15 +22,32 @@ function get<T>(arg: WrapArgument<T>, state: T) {
   return arg(state);
 }
 
+function buildStyleString(
+  id: string,
+  header: string | undefined,
+  body: string,
+) {
+  return `*[data-style*=${id}]${header || ""} { ${body} } `;
+}
+
 function toStyleString(
   id: string,
   state: any,
   templates: TemplateStringsArray,
   ...args: WrapArgument<any>[]
 ) {
-  return ` *[data-style=${id}] { ${templates
+  const dst: string[] = [];
+  let builtStyle = templates
     .map((text, i) => `${text}${get(args[i], state)}`)
-    .join("")} }`;
+    .join("");
+  const regex = /&(.+)\{([^\{\}]+)\}/;
+  let result: RegExpMatchArray | null = null;
+  while ((result = builtStyle.match(regex))) {
+    builtStyle = builtStyle.replace(regex, "");
+    dst.push(buildStyleString(id, result[1].trim(), result[2].trim()));
+  }
+  dst.unshift(buildStyleString(id, undefined, builtStyle.trim()));
+  return dst.join("\n");
 }
 
 function updateStyle(
@@ -44,21 +61,45 @@ function updateStyle(
 }
 
 function renderStyle() {
-  styleEl.innerHTML = Object.keys(styles)
+  const style = Object.keys(styles)
     .map(key => styles[key])
-    .join("");
+    .join("\n")
+    .trim();
+  styleEl.innerHTML != style && (styleEl.innerHTML = style);
 }
 
-export function wrap<State>(name: Tag | Component<State>): Wrap<State> {
+function isWrapped(el: any): el is WrappedComponent<any, any, any> {
+  return !!el.wrapped;
+}
+
+interface WrappedComponent<T, S, V> extends Component<T, S, V> {
+  wrapped: boolean;
+}
+
+export function wrap<Attributes>(
+  name: Tag | Component<Attributes, any, any>,
+): Wrap<Attributes> {
   return function(
     styles: TemplateStringsArray,
-    ...args: WrapArgument<State>[]
-  ): Component<State> {
+    ...args: WrapArgument<Attributes>[]
+  ): Component<Attributes, any, any> {
     const id = random();
-    return (attr: any, children) => (
+    const wrapped: Component<Attributes, any, any> = (attr: any, children) => (
       updateStyle(id, attr, styles, ...args),
-      h<State>(name, { "data-style": id, ...attr }, children)
+      typeof name === "string" || isWrapped(name) ? (
+        h<Attributes>(
+          name,
+          { ...attr, "data-style": `${attr["data-style"] || ""} ${id}`.trim() },
+          children,
+        )
+      ) : (
+        <div data-style={`${attr["data-style"] || ""} ${id}`.trim()}>
+          {h<Attributes>(name, attr, children)}
+        </div>
+      )
     );
+    (wrapped as any).wrapped = true;
+    return wrapped;
   };
 }
 
