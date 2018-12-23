@@ -23,15 +23,6 @@ styled-components like styler for hyperapp.
   // use
   render(<Colored color="blue">Blue</Colored>);
   ```
-* only use element below.
-  * `div`
-  * `span`
-  * `a`
-  * `input`
-  * `textarea`
-  * `h1` ~ `h6`
-  * `ul`, `li`
-  * `button`
 
 ## it can not be
 
