@@ -68,14 +68,6 @@ function renderStyle() {
   styleEl.innerHTML != style && (styleEl.innerHTML = style);
 }
 
-function isWrapped(el: any): el is WrappedComponent<any, any, any> {
-  return !!el.wrapped;
-}
-
-interface WrappedComponent<T, S, V> extends Component<T, S, V> {
-  wrapped: boolean;
-}
-
 export function wrap<Attributes>(
   name: Tag | Component<Attributes, any, any>,
 ): Wrap<Attributes> {
@@ -84,22 +76,14 @@ export function wrap<Attributes>(
     ...args: WrapArgument<Attributes>[]
   ): Component<Attributes, any, any> {
     const id = random();
-    const wrapped: Component<Attributes, any, any> = (attr: any, children) => (
+    return (attr: any, children) => (
       updateStyle(id, attr, styles, ...args),
-      typeof name === "string" || isWrapped(name) ? (
-        h<Attributes>(
-          name,
-          { ...attr, "data-style": `${attr["data-style"] || ""} ${id}`.trim() },
-          children,
-        )
-      ) : (
-        <div data-style={`${attr["data-style"] || ""} ${id}`.trim()}>
-          {h<Attributes>(name, attr, children)}
-        </div>
+      h<Attributes>(
+        name,
+        { ...attr, "data-style": `${attr["data-style"] || ""} ${id}`.trim() },
+        children,
       )
     );
-    (wrapped as any).wrapped = true;
-    return wrapped;
   };
 }
 
