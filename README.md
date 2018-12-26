@@ -24,11 +24,8 @@ styled-components like styler for hyperapp.
   render(<Colored color="blue">Blue</Colored>);
   ```
 
-## it can not be
-
-* &::before, &::after
+* &::before, &::after, &:hover, etc...
   ```tsx
-  // can not be
   styled.div`
     &:before {
       content: "---";
@@ -37,8 +34,25 @@ styled-components like styler for hyperapp.
   ```
 * attribute type definition.
   ```tsx
-  // it can not write now.
   const Comp = styled.div<{ color: string }>`
     color: ${({ color }) => color};
+  `;
+  ```
+
+## it can not be
+
+* @keyframes
+  ```tsx
+  const Comp = styled.div`
+    animation: foo 1s;
+    @keyframes foo {
+      0% {
+        background-color: yellow;
+      }
+
+      100% {
+        background-color: green;
+      }
+    }
   `;
   ```
