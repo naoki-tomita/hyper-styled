@@ -9,7 +9,7 @@
     "typescript": "3.1.4"
   },
   "name": "hyper-styled",
-  "version": "0.0.8",
+  "version": "0.1.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "author": "naoki.tomita <mxcpy608@hotmail.com>",
